@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agendacontatos/helpers/contact_helper.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:agendacontatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,11 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    helper.getAllContacts().then((list) {
-      setState(() {
-        listContacts = list;
-      });
-    });
+    _getAllContacts();
   }
 
   @override
@@ -39,7 +35,7 @@ class _HomePageState extends State<HomePage> {
             Icons.add,
             color: Colors.white,
           ),
-          onPressed: () {}),
+          onPressed: () => _showContactPage()),
       body: ListView.builder(
           padding: EdgeInsets.all(10.0),
           itemCount: listContacts.length,
@@ -85,6 +81,32 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      onTap: () => _showContactPage(contact: listContacts[index]),
     );
+  }
+
+  void _showContactPage({Contact contact}) async {
+    final recContact = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ContactPage(
+                  contact: contact,
+                )));
+    if (recContact != null) {
+      if (contact != null) {
+        await helper.updateContact(recContact);
+      } else {
+        await helper.saveContact(recContact);
+      }
+      _getAllContacts();
+    }
+  }
+
+  void _getAllContacts() {
+    helper.getAllContacts().then((list) {
+      setState(() {
+        listContacts = list;
+      });
+    });
   }
 }
