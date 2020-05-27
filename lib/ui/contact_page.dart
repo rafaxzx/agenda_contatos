@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:async';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:agendacontatos/helpers/contact_helper.dart';
 
@@ -61,6 +61,17 @@ class _ContactPageState extends State<ContactPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
+                onTap: () {
+                  //Utilizado para pegar uma imagem da camera e então atribuir
+                  //para o contato
+                  ImagePicker.pickImage(source: ImageSource.camera)
+                      .then((file) {
+                    if (file == null) return;
+                    setState(() {
+                      _editedContact.img = file.path;
+                    });
+                  });
+                },
                 child: CircleAvatar(
                   radius: 70,
                   backgroundColor: Colors.grey,
@@ -95,7 +106,7 @@ class _ContactPageState extends State<ContactPage> {
                 decoration: InputDecoration(labelText: "Phone"),
                 onChanged: (text) {
                   _userEdited = true;
-                  _editedContact.email = text;
+                  _editedContact.phone = text;
                 },
               ),
             ],

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:agendacontatos/helpers/contact_helper.dart';
 import 'package:agendacontatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ContactHelper helper = ContactHelper();
 
-  List<Contact> listContacts = List();
+  List<Contact> contacts = List();
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
           onPressed: () => _showContactPage()),
       body: ListView.builder(
           padding: EdgeInsets.all(10.0),
-          itemCount: listContacts.length,
+          itemCount: contacts.length,
           itemBuilder: (context, index) => _contactCard(context, index)),
     );
   }
@@ -53,8 +53,8 @@ class _HomePageState extends State<HomePage> {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.grey,
-                backgroundImage: listContacts[index].img != null
-                    ? FileImage(File(listContacts[index].img))
+                backgroundImage: contacts[index].img != null
+                    ? FileImage(File(contacts[index].img))
                     : AssetImage("images/person.png"),
               ),
               Padding(
@@ -63,16 +63,16 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        listContacts[index].name ?? "",
+                        contacts[index].name ?? "",
                         style: TextStyle(
                             fontSize: 22.0, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        listContacts[index].email ?? "",
+                        contacts[index].email ?? "",
                         style: TextStyle(fontSize: 18.0),
                       ),
                       Text(
-                        listContacts[index].phone ?? "",
+                        contacts[index].phone ?? "",
                         style: TextStyle(fontSize: 18.0),
                       )
                     ],
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   void _getAllContacts() {
     helper.getAllContacts().then((list) {
       setState(() {
-        listContacts = list;
+        contacts = list;
       });
     });
   }
@@ -130,7 +130,10 @@ class _HomePageState extends State<HomePage> {
                           child: Text("Ligar",
                               style: TextStyle(
                                   color: Colors.black, fontSize: 20.0)),
-                          onPressed: () {},
+                          onPressed: () {
+                            launch("tel:${contacts[index].phone}");
+                            Navigator.pop(context);
+                          },
                         ),
                       ),
                       Divider(),
@@ -142,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.blue, fontSize: 20.0)),
                           onPressed: () {
                             Navigator.pop(context);
-                            _showContactPage(contact: listContacts[index]);
+                            _showContactPage(contact: contacts[index]);
                           },
                         ),
                       ),
@@ -154,9 +157,9 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                     color: Colors.red, fontSize: 20.0)),
                             onPressed: () {
-                              helper.deleteContact(listContacts[index].id);
+                              helper.deleteContact(contacts[index].id);
                               setState(() {
-                                listContacts.removeAt(index);
+                                contacts.removeAt(index);
                                 Navigator.pop(context);
                               });
                             },
