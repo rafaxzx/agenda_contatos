@@ -81,7 +81,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      onTap: () => _showContactPage(contact: listContacts[index]),
+      onTap: () => _showOptions(context, index),
+//      onTap: () => _showContactPage(contact: listContacts[index]),
     );
   }
 
@@ -108,5 +109,62 @@ class _HomePageState extends State<HomePage> {
         listContacts = list;
       });
     });
+  }
+
+  _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            onClosing: () {},
+            builder: (context) {
+              return Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    //Diminui ao maximo o espaço ocupado pelo BottomSheet
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: FlatButton(
+                          child: Text("Ligar",
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 20.0)),
+                          onPressed: () {},
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: FlatButton(
+                          child: Text("Editar",
+                              style: TextStyle(
+                                  color: Colors.blue, fontSize: 20.0)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showContactPage(contact: listContacts[index]);
+                          },
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: FlatButton(
+                            child: Text("Excluir",
+                                style: TextStyle(
+                                    color: Colors.red, fontSize: 20.0)),
+                            onPressed: () {
+                              helper.deleteContact(listContacts[index].id);
+                              setState(() {
+                                listContacts.removeAt(index);
+                                Navigator.pop(context);
+                              });
+                            },
+                          )),
+                    ],
+                  ));
+            },
+          );
+        });
   }
 }
